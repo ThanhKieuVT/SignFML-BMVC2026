@@ -1,0 +1,6 @@
+torch>=2.0
+numpy
+tqdm
+transformers>=4.30    # mBART-50 text encoder + multilingual BERT tokenizer
+pyyaml                # config files
+scipy                 # Gaussian smoothing at inference
