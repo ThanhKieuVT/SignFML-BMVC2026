@@ -18,10 +18,10 @@ annotations**, using conditional **flow matching** in a compact latent space. Tw
 At inference, a midpoint ODE solver with time-decaying Classifier-Free Guidance integrates
 the velocity field (S=50 steps → 100 NFEs), then a light Gaussian smoothing (σ=1.2) is applied.
 
-> **Note.** This is a public reference release accompanying the paper. The training scripts
-> and hyperparameters are provided in full, while the core model implementations are shown as
-> **skeletons** (class/method structure and docstrings) with internals redacted. It is
-> intended to document the method, not for turnkey re-execution.
+> **Note.** This is a public reference release accompanying the paper. The model and training
+> code are provided as **skeletons** (class/method structure only) with implementation details
+> redacted. It is intended to document the method and architecture, not for turnkey
+> re-execution.
 
 ## Results (PHOENIX-2014T, SLRTP 2025 protocol)
 
@@ -34,9 +34,9 @@ the velocity field (S=50 steps → 100 NFEs), then a light Gaussian smoothing (�
 ```
 signfml_release/
 ├── training/
-│   ├── train_stage1_autoencoder.py     # Stage 1: pose autoencoder (full recipe)
-│   └── train_stage2.py                 # Stage 2: latent flow matching (full recipe)
-├── models/fml/                         # core models (skeletons — internals redacted)
+│   ├── train_stage1_autoencoder.py     # Stage 1: pose autoencoder
+│   └── train_stage2.py                 # Stage 2: latent flow matching
+├── models/fml/                         # core models (skeletons)
 │   ├── autoencoder.py                  # Stage 1 autoencoder
 │   ├── autoencoder_v2.py               # AE used by Stage 2 (frozen)
 │   ├── latent_flow_matcher.py          # Multi-scale flow + coarse-to-fine prior
