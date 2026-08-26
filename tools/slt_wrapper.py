@@ -1,10 +1,5 @@
-# NOTE: Public-release skeleton. Class/method structure is shown for
-# reference; implementation details are redacted.
+# Public-release skeleton: structure only; implementation redacted.
 
-"""
-SLT Inference Wrapper for SignFML Evaluation
-Wraps Sign-IDD-SLT model (based on SignJoey) to translate poses to text.
-"""
 import sys
 import os
 import torch
@@ -30,23 +25,14 @@ except ImportError as e:
 MockTorchBatch = namedtuple('MockTorchBatch', ['sgn', 'sequence', 'signer'])
 
 class SLTWrapper:
-    """Wrapper for temp_slrtp_eval model"""
 
     def __init__(self, model_dir: Optional[Union[str, Path]]=None, device: Optional[str]=None):
         raise NotImplementedError('Implementation redacted in public release; available upon request.')
 
     def poses_to_text(self, poses, beam_size=3, beam_alpha=-1):
-        """
-        Translate list of pose tensors -> List of strings
-        Args:
-            poses: List of [T, D] tensors or [B, T, D] tensor
-        Note: Data is assumed to be 25fps. SLT model expects ~12.5fps 
-              (skeleton_subsample=2 in config), so we downsample [::2].
-        """
         raise NotImplementedError('Implementation redacted in public release; available upon request.')
 
     def compute_bleu(self, predicted_poses, reference_texts, tokenize='13a'):
-        """Computes BLEU-4"""
         raise NotImplementedError('Implementation redacted in public release; available upon request.')
 
 def test_slt_wrapper():

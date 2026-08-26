@@ -1,5 +1,4 @@
-# NOTE: Public-release skeleton. Class/method structure is shown for
-# reference; implementation details are redacted.
+# Public-release skeleton: structure only; implementation redacted.
 
 import math
 import yaml
@@ -68,26 +67,12 @@ class TransformerEncoder(nn.Module):
         raise NotImplementedError('Implementation redacted in public release; available upon request.')
 
 class SLTPerceptualLoss(nn.Module):
-    """
-    SLT Perceptual Loss (Sign Language Transformer Encoder features).
-    Provides a semantic bridge by using the hidden representations of a 
-    pretrained back-translation model.
-    """
 
     def __init__(self, slt_model_dir: str, device: str='cpu'):
         raise NotImplementedError('Implementation redacted in public release; available upon request.')
 
     def train(self, mode: bool=True):
-        """Permanently stay in eval mode to preserve BatchNorm/Dropout behavior."""
         raise NotImplementedError('Implementation redacted in public release; available upon request.')
 
     def forward(self, pred_poses_3d: torch.Tensor, gt_poses_3d: torch.Tensor, mask: Optional[torch.Tensor]=None):
-        """
-        Compute SLT Perceptual Loss (MSE between features).
-        
-        Args:
-            pred_poses_3d: [B, T, 178, 3] or [B, T, 534]
-            gt_poses_3d: [B, T, 178, 3] or [B, T, 534]
-            mask: [B, T] sequence mask (1 for valid, 0 for padding)
-        """
         raise NotImplementedError('Implementation redacted in public release; available upon request.')

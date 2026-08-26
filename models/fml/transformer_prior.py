@@ -1,18 +1,5 @@
-# NOTE: Public-release skeleton. Class/method structure is shown for
-# reference; implementation details are redacted.
+# Public-release skeleton: structure only; implementation redacted.
 
-"""
-Transformer Prior V2 - With Cross-Attention to Text
-====================================================
-Author: SignFML Research
-Date: 21 Jan 2026
-
-Improvement over V1:
-- Uses cross-attention to text features (per-token conditioning)
-- Instead of just global text pooling
-- AdaLN-Zero for time conditioning
-- LayerScale for stability
-"""
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -23,13 +10,6 @@ except ImportError:
     from flow_matching import AdaLNZero, LayerScale, FlashCrossAttention, RotaryPositionEmbedding, SafeTimeEmbedding, SinusoidalPositionalEmbedding
 
 class PriorTransformerLayer(nn.Module):
-    """
-    Transformer layer for Prior with:
-    - Self-attention on latent sequence
-    - Cross-attention to text features
-    - AdaLN-Zero for time conditioning
-    - LayerScale for stability
-    """
 
     def __init__(self, hidden_dim: int, num_heads: int, ffn_dim: int, dropout: float=0.1, layer_scale_init: float=0.1):
         raise NotImplementedError('Implementation redacted in public release; available upon request.')
@@ -38,16 +18,6 @@ class PriorTransformerLayer(nn.Module):
         raise NotImplementedError('Implementation redacted in public release; available upon request.')
 
 class TransformerPriorV2(nn.Module):
-    """
-    Improved Transformer Prior with Cross-Attention to Text
-    
-    V2 improvements:
-    - Per-token text conditioning via cross-attention (not just global pooling)
-    - AdaLN-Zero for time conditioning
-    - RoPE for temporal modeling
-    - LayerScale for stability
-    - Zero-init output for stable start
-    """
 
     def __init__(self, latent_dim: int=256, hidden_dim: int=512, num_layers: int=4, num_heads: int=8, dropout: float=0.1, max_seq_len: int=512, layer_scale_init: float=0.1):
         raise NotImplementedError('Implementation redacted in public release; available upon request.')
@@ -56,12 +26,6 @@ class TransformerPriorV2(nn.Module):
         raise NotImplementedError('Implementation redacted in public release; available upon request.')
 
     def forward(self, z: torch.Tensor, t: torch.Tensor, text_features: torch.Tensor, pose_mask: Optional[torch.Tensor]=None, text_mask: Optional[torch.Tensor]=None) -> torch.Tensor:
-        """
-        Predict prior velocity v_prior(z, t, text)
-        
-        Returns:
-            v_prior: [B, T, latent_dim]
-        """
         raise NotImplementedError('Implementation redacted in public release; available upon request.')
 TransformerPrior = TransformerPriorV2
 if __name__ == '__main__':

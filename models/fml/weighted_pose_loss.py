@@ -1,24 +1,5 @@
-# NOTE: Public-release skeleton. Class/method structure is shown for
-# reference; implementation details are redacted.
+# Public-release skeleton: structure only; implementation redacted.
 
-"""
-Multi-Part Weighted Loss for Sign Language Pose Generation
-===========================================================
-Author: Kieu Vo - Improved Version
-Date: 23 Jan 2026
-
-Addresses the critical issue where hands and face are under-learned
-because body keypoints (102 dims) dominate the MSE loss.
-
-Pose structure (214 dims):
-- Body: 33 keypoints × 2 = 66 dims (first 66)
-- Left Hand: 21 keypoints × 2 = 42 dims (66:108)
-- Right Hand: 21 keypoints × 2 = 42 dims (108:150)
-- Face: 70 keypoints × 2 = 140 dims (150:290, but we have 214 total)
-  Actually: Face uses remaining 64 dims (150:214)
-
-Note: The actual face dim is 64, not 140. Adjusting accordingly.
-"""
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -26,76 +7,25 @@ from typing import Optional, Tuple, Union
 from .structural_losses import bone_length_loss, bone_orientation_loss
 
 class PosePartWeightedLoss(nn.Module):
-    """
-    Weighted MSE Loss for different body parts in sign language.
-    
-    Pose dimensions (534 total, SLRTP 3D):
-    - Body: [0:24] (8 pts * 3 = 24 dims)
-    - Right Hand: [24:87] (21 pts * 3 = 63 dims)
-    - Left Hand: [87:150] (21 pts * 3 = 63 dims)
-    - Face: [150:534] (128 pts * 3 = 384 dims)
-    
-    Default weights prioritize hands (55%) over face (30%) and body (15%).
-    """
 
     def __init__(self, pose_dim: int=534, body_dim: int=24, hand_dim: int=63, face_dim: int=384, weight_body: float=0.15, weight_hands: float=0.55, weight_face: float=0.3, use_huber: bool=False, huber_delta: float=1.0, use_adaptive_weights: bool=False):
         raise NotImplementedError('Implementation redacted in public release; available upon request.')
 
     def _compute_loss(self, pred: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
-        """Compute base loss (MSE or Huber)."""
         raise NotImplementedError('Implementation redacted in public release; available upon request.')
 
     def forward(self, pred: torch.Tensor, target: torch.Tensor, mask: Optional[torch.Tensor]=None, return_parts: bool=False) -> Union[torch.Tensor, Tuple[torch.Tensor, dict]]:
-        """
-        Compute weighted loss across body parts.
-        
-        Args:
-            pred: [B, T, 214] - Predicted poses
-            target: [B, T, 214] - Target poses
-            mask: [B, T] - True = valid, False = padding
-            return_parts: If True, return (total_loss, loss_dict)
-        
-        Returns:
-            total_loss: Weighted sum of part losses
-            loss_dict (optional): Individual part losses for logging
-        """
         raise NotImplementedError('Implementation redacted in public release; available upon request.')
 
 class SignLanguageLoss(nn.Module):
-    """
-    Complete Sign Language Loss with:
-    - Weighted spatial loss (body/hands/face)
-    - Temporal smoothness loss (velocity/acceleration)
-    - Optional perceptual loss (future: VGG on pose rendering)
-    
-    Optimized for sign language where hands >>> body >>> face in importance.
-    """
 
     def __init__(self, pose_dim: int=534, body_dim: int=24, hand_dim: int=63, face_dim: int=384, weight_body: float=0.15, weight_hands: float=0.55, weight_face: float=0.3, weight_velocity: float=0.1, weight_acceleration: float=0.05, weight_bone: float=0.1, weight_bone_orientation: float=0.1, use_huber: bool=False, huber_delta: float=1.0, use_adaptive_weights: bool=False):
         raise NotImplementedError('Implementation redacted in public release; available upon request.')
 
     def _compute_temporal_loss(self, pred: torch.Tensor, target: torch.Tensor, mask: Optional[torch.Tensor]=None) -> Tuple[torch.Tensor, torch.Tensor]:
-        """
-        Compute temporal consistency losses.
-        
-        Returns:
-            velocity_loss, acceleration_loss
-        """
         raise NotImplementedError('Implementation redacted in public release; available upon request.')
 
     def forward(self, pred: torch.Tensor, target: torch.Tensor, mask: Optional[torch.Tensor]=None, return_parts: bool=False) -> Union[torch.Tensor, Tuple[torch.Tensor, dict]]:
-        """
-        Compute total sign language loss.
-        
-        Args:
-            pred: [B, T, 214]
-            target: [B, T, 214]
-            mask: [B, T] - True = valid
-            return_parts: If True, return (total_loss, loss_dict)
-        
-        Returns:
-            total_loss or (total_loss, loss_dict)
-        """
         raise NotImplementedError('Implementation redacted in public release; available upon request.')
 if __name__ == '__main__':
     print('=' * 60)
