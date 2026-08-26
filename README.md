@@ -87,8 +87,8 @@ Pretrained weights are hosted on Google Drive (the files are too large for Git /
 
 | Stage | Description | Download |
 |---|---|---|
-| Stage 1 | Pose Autoencoder (frozen) | [Google Drive](REPLACE_WITH_DRIVE_LINK) |
-| Stage 2 | SignFML final (BLEU-4 12.58 / WER 81.51) | [Google Drive](REPLACE_WITH_DRIVE_LINK) |
+| Stage 1 | Pose Autoencoder (frozen) | [Google Drive](https://drive.google.com/drive/folders/1FibopW3Nk3E0w-tkShI3FFlrdllAQ3N9?usp=drive_link) |
+| Stage 2 | SignFML final (BLEU-4 12.58 / WER 81.51) | [Google Drive](https://drive.google.com/drive/folders/15QJoVisL7GyP4WxtIh42wsRITm3swosI?usp=drive_link) |
 
 ## Citation
 
