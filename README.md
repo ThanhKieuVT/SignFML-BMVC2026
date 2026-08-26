@@ -81,6 +81,15 @@ python training/train_stage2.py \
 
 Hyperparameters and full arguments are omitted from this public reference release.
 
+## Checkpoints
+
+Pretrained weights are hosted on Google Drive (the files are too large for Git / GitHub Releases):
+
+| Stage | Description | Download |
+|---|---|---|
+| Stage 1 | Pose Autoencoder (frozen) | [Google Drive](REPLACE_WITH_DRIVE_LINK) |
+| Stage 2 | SignFML final (BLEU-4 12.58 / WER 81.51) | [Google Drive](REPLACE_WITH_DRIVE_LINK) |
+
 ## Citation
 
 ```bibtex
