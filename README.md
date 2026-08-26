@@ -18,8 +18,10 @@ annotations**, using conditional **flow matching** in a compact latent space. Tw
 At inference, a midpoint ODE solver with time-decaying Classifier-Free Guidance integrates
 the velocity field (S=50 steps → 100 NFEs), then a light Gaussian smoothing (σ=1.2) is applied.
 
-> This is the **basic training source** for reproducibility. Pretrained weights (final model,
-> ablations, and back-translation evaluators) are described in [CHECKPOINTS.md](CHECKPOINTS.md).
+> **Note.** This is a public reference release accompanying the paper. The training scripts
+> and hyperparameters are provided in full, while the core model implementations are shown as
+> **skeletons** (class/method structure and docstrings) with internals redacted. It is
+> intended to document the method, not for turnkey re-execution.
 
 ## Results (PHOENIX-2014T, SLRTP 2025 protocol)
 
@@ -32,23 +34,22 @@ the velocity field (S=50 steps → 100 NFEs), then a light Gaussian smoothing (�
 ```
 signfml_release/
 ├── training/
-│   ├── train_stage1_autoencoder.py     # Stage 1: pose autoencoder
-│   └── train_stage2_v11_24mar.py       # Stage 2: latent flow matching (final V11)
-├── models/fml/
+│   ├── train_stage1_autoencoder.py     # Stage 1: pose autoencoder (full recipe)
+│   └── train_stage2.py                 # Stage 2: latent flow matching (full recipe)
+├── models/fml/                         # core models (skeletons — internals redacted)
 │   ├── autoencoder.py                  # Stage 1 autoencoder
 │   ├── autoencoder_v2.py               # AE used by Stage 2 (frozen)
-│   ├── latent_flow_matcher_v11_24mar.py# Multi-scale flow + coarse-to-fine prior (+MultiScaleFlowBlock)
-│   ├── transformer_prior_v5_28feb.py   # Transformer Prior (coarse velocity)
-│   ├── flow_matching_v5_shared.py      # shared flow-matching components
+│   ├── latent_flow_matcher.py          # Multi-scale flow + coarse-to-fine prior
+│   ├── transformer_prior.py            # Transformer Prior (coarse velocity)
+│   ├── flow_matching.py                # shared flow-matching components
 │   ├── weighted_pose_loss.py           # part-weighted pose loss (+velocity/bone)
 │   ├── slt_perceptual_loss.py          # SLT Perceptual Loss
 │   └── ema.py                          # EMA of weights
-├── tools/slt_wrapper_v5_28feb.py       # wrapper around the frozen back-translation SLT
+├── tools/slt_wrapper.py                # wrapper around the frozen back-translation SLT
 ├── dataset.py                          # Phoenix14TDataset + collate_fn
 ├── dataset_v4.py                       # Phoenix14TDatasetV4 (Stage 2, temporal aug)
 ├── configs/slt_v2_seed142.yaml         # config for the independent SLT_ind evaluator
-├── requirements.txt
-└── CHECKPOINTS.md
+└── requirements.txt
 ```
 
 ## Install
@@ -72,7 +73,7 @@ python training/train_stage1_autoencoder.py \
     --latent_dim 256 --num_epochs 200 --batch_size 32 --learning_rate 1e-4
 
 # Stage 2: latent flow matching (uses frozen Stage-1 AE + frozen SLT)
-python training/train_stage2_v11_24mar.py \
+python training/train_stage2.py \
     --data_dir /path/to/phoenix2014t \
     --stage1_checkpoint ckpts/stage1/ae_best.pt \
     --slt_model_dir /path/to/slt_backtranslation \

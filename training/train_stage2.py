@@ -32,13 +32,13 @@ def get_raw_model(model):
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from models.fml.latent_flow_matcher_v11_24mar import LatentFlowMatcherV11
+from models.fml.latent_flow_matcher import LatentFlowMatcherV11
 from models.fml.autoencoder_v2 import UnifiedPoseAutoencoder
 from models.fml.ema import EMA
 from models.fml.weighted_pose_loss import SignLanguageLoss
 from models.fml.slt_perceptual_loss import SLTPerceptualLoss
 from dataset_v4 import Phoenix14TDatasetV4 as SignLanguageDataset, collate_fn
-from tools.slt_wrapper_v5_28feb import SLTWrapper
+from tools.slt_wrapper import SLTWrapper
 
 # =============================================================================
 # REUSE: CachedFeaturesDataset, make_cached_collate_fn, build_text_feature_cache
