@@ -69,20 +69,17 @@ and normalized (see `dataset.py`).
 ```bash
 # Stage 1: pose autoencoder (freeze after training)
 python training/train_stage1_autoencoder.py \
-    --data_dir /path/to/phoenix2014t --output_dir ckpts/stage1 \
-    --latent_dim 256 --num_epochs 200 --batch_size 32 --learning_rate 1e-4
+    --data_dir /path/to/phoenix2014t --output_dir ckpts/stage1
 
 # Stage 2: latent flow matching (uses frozen Stage-1 AE + frozen SLT)
 python training/train_stage2.py \
     --data_dir /path/to/phoenix2014t \
     --stage1_checkpoint ckpts/stage1/ae_best.pt \
     --slt_model_dir /path/to/slt_backtranslation \
-    --output_dir ckpts/stage2 \
-    --lr 1e-4 --batch_size 32 --epochs 300 \
-    --w_flow 1.0 --w_prior 1.0 --w_perceptual 3.0 --w_length 1.5
+    --output_dir ckpts/stage2
 ```
 
-Run each script with `-h` for the full list of arguments.
+Hyperparameters and full arguments are omitted from this public reference release.
 
 ## Citation
 
