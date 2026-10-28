@@ -1,44 +1,150 @@
-# SignFML: Gloss-Free Sign Language Production via Multi-Scale Latent Flow Matching
+<div align="center">
 
-Source code (training) for our **BMVC 2026** paper.
+<img src="assets/logos/hcmut_cse_logo.png" height="64">&emsp;&emsp;<img src="assets/logos/bmvc2026_logo.png" height="64">
 
-SignFML generates skeletal signing motion from spoken-language text **without gloss
-annotations**, using conditional **flow matching** in a compact latent space. Two stages:
+<h1>SignFML: Gloss-Free Sign Language Production<br>via Multi-Scale Latent Flow Matching</h1>
 
-1. **Stage 1 — Pose Autoencoder.** A Transformer autoencoder compresses variable-length
-   534-D pose frames (body + hands + face, 178 3D keypoints) into a 256-D latent sequence,
-   then is **frozen**.
-2. **Stage 2 — Latent Flow Matching.** A conditional flow-matching model, conditioned on
-   frozen mBART-50 text embeddings, generates latent trajectories via a **Multi-Scale Flow
-   Block** with a **coarse-to-fine velocity decomposition** (a Transformer Prior gated by a
-   time-annealed `λ(t)`, with a stop-gradient to avoid circular dependency), trained with an
-   **SLT Perceptual Loss** (frozen back-translation encoder). A Length Predictor sets the
-   output length for non-autoregressive generation.
+**Kieu T. T. Vo**<sup>1</sup> · **Tho T. Quan**<sup>1&dagger;</sup>
 
-At inference, a midpoint ODE solver with time-decaying Classifier-Free Guidance integrates
-the velocity field (S=50 steps → 100 NFEs), then a light Gaussian smoothing (σ=1.2) is applied.
+<sup>1</sup>Faculty of Computer Science and Engineering, Ho Chi Minh City University of Technology (HCMUT), VNU-HCM, Vietnam
+<br>
+&dagger;Corresponding author
 
-> **Note.** This is a public reference release accompanying the paper. The model and training
-> code are provided as **skeletons** (class/method structure only) with implementation details
-> redacted. It is intended to document the method and architecture, not for turnkey
-> re-execution.
+**BMVC 2026**
 
-## Results (PHOENIX-2014T, SLRTP 2025 protocol)
+<a href="https://bmvc2026.bmva.org/programme/accepted_papers/"><img src="https://img.shields.io/badge/BMVC-2026-b5141e" alt="BMVC 2026"></a>
+<a href="https://thanhkieuvt.github.io/signfml-demo/"><img src="https://img.shields.io/badge/Project_Page-Demo-1f4e9c" alt="Project page"></a>
+<a href="#checkpoints"><img src="https://img.shields.io/badge/Checkpoints-Google_Drive-4285F4?logo=googledrive&logoColor=white" alt="Checkpoints"></a>
+<img src="https://img.shields.io/badge/PyTorch-2.0+-ee4c2c?logo=pytorch&logoColor=white" alt="PyTorch">
+<a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-lightgrey" alt="MIT license"></a>
 
-| BLEU-4 | WER | Total Distance (→1.0) | NFEs |
-|---|---|---|---|
-| 12.58 | 81.51 | 0.886 | 100 (≈10× fewer than diffusion) |
+<img src="assets/teaser.gif" width="92%">
+
+<sub>Generated from German text only, on PHOENIX-2014T test sentences. In each pair, left is the ground-truth skeleton and right is SignFML.</sub>
+
+</div>
+
+SignFML turns spoken-language text into 3D sign pose sequences without gloss annotation. It runs conditional flow matching in the compact latent space of a pose autoencoder, so training stays stable on a small dataset and sampling needs about 10&times; fewer network evaluations than diffusion models.
+
+## News
+
+- **2026-10-28** Qualitative examples added to this page.
+- **2026-08-26** Code release and pretrained checkpoints for Stage 1 and Stage 2.
+- **2026-08-08** SignFML is accepted to **BMVC 2026**.
+
+## Highlights
+
+- **Latent flow matching.** Generation happens in a 256-D latent space learned by a frozen pose autoencoder, not on raw 534-D poses.
+- **Coarse-to-fine velocity.** A Transformer prior predicts the global direction early in sampling, and a multi-scale flow block refines local articulation.
+- **SLT perceptual loss.** A frozen sign-to-text encoder compares generated and real poses at the sentence level, which keeps the meaning of the input.
+- **Strong and fast.** Best BLEU-4 (12.58) and WER (81.51) on PHOENIX-2014T among the compared systems, with 100 NFEs per sample.
+
+## Method
+
+<p align="center"><img src="assets/figures/architecture.png" width="95%"></p>
+
+**Stage 1, pose autoencoder.** A Transformer autoencoder compresses each 534-D pose frame (body, hands and face, 178 3D keypoints) into a 256-D latent and is then frozen.
+
+**Stage 2, latent flow matching.** Text features from a frozen mBART-50 encoder condition a flow matching model that carries Gaussian noise to the latent sequence along a straight path. A length predictor sets the number of frames, a midpoint ODE solver with time-decaying classifier-free guidance integrates the velocity field over 50 steps, and the frozen decoder returns poses.
+
+<p align="center"><img src="assets/figures/coarse_to_fine.png" width="80%"></p>
+
+**Coarse-to-fine velocity.** The final velocity is $\mathbf{v}(t)=\hat{\mathbf{v}}_{\text{flow}}+\lambda(t)\,\mathrm{sg}(\hat{\mathbf{v}}_{\text{prior}})$ with $\lambda(t)=\tfrac12(1-t)$. The prior matters most while the sample is mostly noise and fades out at the end; the stop-gradient keeps the two branches from depending on each other.
+
+## Results
+
+PHOENIX-2014T test set, SLRTP 2025 evaluation protocol. Text metrics come from back-translating the generated poses. *Dist* is total wrist travel relative to the real signer, so values closer to 1 are better.
+
+| Method | Gloss | BLEU-4 &uarr; | ROUGE &uarr; | WER &darr; | DTW-MJE &darr; | Dist &rarr; 1 |
+|:--|:--:|:--:|:--:|:--:|:--:|:--:|
+| Ground Truth | | 12.78 | 35.20 | 85.77 | 0.0000 | 1.000 |
+| Progressive Transformer | ✗ | 5.43 | 21.98 | 101.45 | 0.0418 | 0.257 |
+| SLRTP 2025 Team 3 (Hacettepe) | ✗ | 9.59 | 30.64 | 88.88 | 0.0423 | 0.798 |
+| SLRTP 2025 Team 1 (USTC-MoE) | ✓ | 12.06 | 36.59 | 93.49 | 0.0448 | 1.631 |
+| DARSLP-KL | ✗ | 10.90 | 31.80 | | 0.0390 | |
+| ILRSLP-KL | ✗ | 11.37 | 34.10 | | **0.0370** | |
+| **SignFML (ours)** | ✗ | **12.58** | **36.65** | **81.51** | 0.0434 | **0.886** |
+
+<details>
+<summary><b>Ablation and evaluator robustness</b></summary>
+<br>
+
+| Setting | BLEU-4 &uarr; | WER &darr; |
+|:--|:--:|:--:|
+| **SignFML (full)** | **12.58** | **81.51** |
+| w/o SLT loss | 6.89 | 94.81 |
+| w/o latent space (raw pose) | 9.00 | 90.54 |
+| w/o multi-scale | 10.00 | 91.55 |
+| w/o coarse-to-fine prior | 10.83 | 84.20 |
+
+The SLT loss and the standard back-translation evaluator share a checkpoint, so we also score SignFML with two separately trained evaluators:
+
+| Evaluator | BLEU-4 &uarr; | WER &darr; |
+|:--|:--:|:--:|
+| SLT<sub>orig</sub> (SLRTP standard) | 12.58 | 81.51 |
+| SLT<sub>ind</sub> (Transformer, new seed) | 12.96 | 80.64 |
+| SLT<sub>rnn</sub> (BiLSTM) | 12.42 | 82.85 |
+
+</details>
 
 ## Qualitative examples
 
-Generated from the German sentence alone, on PHOENIX-2014T test sentences. Left: ground-truth skeleton. Right: SignFML.
+<table>
+<tr>
+<td width="50%"><img src="assets/qualitative/rank1.gif" width="100%"><br><i>"guten abend liebe zuschauer."</i><br>Good evening, dear viewers.</td>
+<td width="50%"><img src="assets/qualitative/rank2.gif" width="100%"><br><i>"und nun die wettervorhersage für morgen dienstag den fünften januar."</i><br>And now the weather forecast for tomorrow, Tuesday the 5th of January.</td>
+</tr>
+<tr>
+<td width="50%"><img src="assets/qualitative/rank4.gif" width="100%"><br><i>"und nun die wettervorhersage für morgen donnerstag den dritten märz."</i><br>And now the weather forecast for tomorrow, Thursday the 3rd of March.</td>
+<td width="50%"><img src="assets/qualitative/rank5.gif" width="100%"><br><i>"und nun die wettervorhersage für morgen montag den achtundzwanzigsten november."</i><br>And now the weather forecast for tomorrow, Monday the 28th of November.</td>
+</tr>
+</table>
 
-| | |
-|---|---|
-| <img src="assets/qualitative/rank1.gif" width="100%"><br>*"guten abend liebe zuschauer."*<br>Good evening, dear viewers. | <img src="assets/qualitative/rank2.gif" width="100%"><br>*"und nun die wettervorhersage für morgen dienstag den fünften januar."*<br>And now the weather forecast for tomorrow, Tuesday the 5th of January. |
-| <img src="assets/qualitative/rank4.gif" width="100%"><br>*"und nun die wettervorhersage für morgen donnerstag den dritten märz."*<br>And now the weather forecast for tomorrow, Thursday the 3rd of March. | <img src="assets/qualitative/rank5.gif" width="100%"><br>*"und nun die wettervorhersage für morgen montag den achtundzwanzigsten november."*<br>And now the weather forecast for tomorrow, Monday the 28th of November. |
+Comparison with the SLRTP 2025 challenge entries on the same sentence. Progressive Transformer and Team 3 keep the arms close to the body and Team 2 jitters.
 
-## Repository layout
+<p align="center"><img src="assets/figures/qualitative_slrtp.png" width="95%"></p>
+
+## Checkpoints
+
+Pretrained weights are hosted on Google Drive, as the files are too large for Git or GitHub Releases.
+
+| Stage | Description | Download |
+|:--|:--|:--:|
+| Stage 1 | Pose autoencoder (frozen in Stage 2) | [Google Drive](https://drive.google.com/drive/folders/1FibopW3Nk3E0w-tkShI3FFlrdllAQ3N9?usp=drive_link) |
+| Stage 2 | SignFML final (BLEU-4 12.58, WER 81.51) | [Google Drive](https://drive.google.com/drive/folders/15QJoVisL7GyP4WxtIh42wsRITm3swosI?usp=drive_link) |
+
+## Getting started
+
+> [!NOTE]
+> This is a public reference release accompanying the paper. The model and training code are provided as **skeletons** (class and method structure only) with implementation details redacted. It documents the method and architecture and is not meant for turnkey re-execution.
+
+**Install**
+
+```bash
+pip install -r requirements.txt
+```
+
+**Data.** PHOENIX-2014T stored as `.pt` files (`train.pt`, `dev.pt`, `test.pt`), each a dict of `video_id -> {poses_3d: [T,178,3], text: str, gloss: str, ...}`. Poses are flattened to 534-D and normalized (see `dataset.py`).
+
+**Train**
+
+```bash
+# Stage 1: pose autoencoder (frozen after training)
+python training/train_stage1_autoencoder.py \
+    --data_dir /path/to/phoenix2014t --output_dir ckpts/stage1
+
+# Stage 2: latent flow matching (uses the frozen Stage 1 AE and the frozen SLT encoder)
+python training/train_stage2.py \
+    --data_dir /path/to/phoenix2014t \
+    --stage1_checkpoint ckpts/stage1/ae_best.pt \
+    --slt_model_dir /path/to/slt_backtranslation \
+    --output_dir ckpts/stage2
+```
+
+Hyperparameters and full arguments are omitted from this public release.
+
+<details>
+<summary><b>Repository layout</b></summary>
 
 ```
 signfml_release/
@@ -48,11 +154,11 @@ signfml_release/
 ├── models/fml/                         # core models (skeletons)
 │   ├── autoencoder.py                  # Stage 1 autoencoder
 │   ├── autoencoder_v2.py               # AE used by Stage 2 (frozen)
-│   ├── latent_flow_matcher.py          # Multi-scale flow + coarse-to-fine prior
-│   ├── transformer_prior.py            # Transformer Prior (coarse velocity)
+│   ├── latent_flow_matcher.py          # multi-scale flow + coarse-to-fine prior
+│   ├── transformer_prior.py            # Transformer prior (coarse velocity)
 │   ├── flow_matching.py                # shared flow-matching components
 │   ├── weighted_pose_loss.py           # part-weighted pose loss (+velocity/bone)
-│   ├── slt_perceptual_loss.py          # SLT Perceptual Loss
+│   ├── slt_perceptual_loss.py          # SLT perceptual loss
 │   └── ema.py                          # EMA of weights
 ├── tools/slt_wrapper.py                # wrapper around the frozen back-translation SLT
 ├── dataset.py                          # Phoenix14TDataset + collate_fn
@@ -61,45 +167,11 @@ signfml_release/
 └── requirements.txt
 ```
 
-## Install
-
-```bash
-pip install -r requirements.txt
-```
-
-## Data
-
-PHOENIX-2014T stored as `.pt` files (`train.pt` / `dev.pt` / `test.pt`), each a dict of
-`video_id -> {poses_3d: [T,178,3], text: str, gloss: str, ...}`. Poses are flattened to 534-D
-and normalized (see `dataset.py`).
-
-## Train
-
-```bash
-# Stage 1: pose autoencoder (freeze after training)
-python training/train_stage1_autoencoder.py \
-    --data_dir /path/to/phoenix2014t --output_dir ckpts/stage1
-
-# Stage 2: latent flow matching (uses frozen Stage-1 AE + frozen SLT)
-python training/train_stage2.py \
-    --data_dir /path/to/phoenix2014t \
-    --stage1_checkpoint ckpts/stage1/ae_best.pt \
-    --slt_model_dir /path/to/slt_backtranslation \
-    --output_dir ckpts/stage2
-```
-
-Hyperparameters and full arguments are omitted from this public reference release.
-
-## Checkpoints
-
-Pretrained weights are hosted on Google Drive (the files are too large for Git / GitHub Releases):
-
-| Stage | Description | Download |
-|---|---|---|
-| Stage 1 | Pose Autoencoder (frozen) | [Google Drive](https://drive.google.com/drive/folders/1FibopW3Nk3E0w-tkShI3FFlrdllAQ3N9?usp=drive_link) |
-| Stage 2 | SignFML final (BLEU-4 12.58 / WER 81.51) | [Google Drive](https://drive.google.com/drive/folders/15QJoVisL7GyP4WxtIh42wsRITm3swosI?usp=drive_link) |
+</details>
 
 ## Citation
+
+If you find SignFML useful, please cite:
 
 ```bibtex
 @inproceedings{vo2026signfml,
@@ -109,3 +181,11 @@ Pretrained weights are hosted on Google Drive (the files are too large for Git /
   year      = {2026}
 }
 ```
+
+## Acknowledgements
+
+We acknowledge Ho Chi Minh City University of Technology (HCMUT), VNU-HCM for supporting this study. We evaluate with the SLRTP 2025 protocol on RWTH-PHOENIX-Weather-2014T and use mBART-50 as the text encoder.
+
+## License
+
+Released under the [MIT License](LICENSE).
