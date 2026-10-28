@@ -38,13 +38,7 @@ SignFML turns spoken-language text into 3D sign pose sequences without gloss ann
 
 <p align="center"><img src="assets/figures/architecture.png" width="95%"></p>
 
-**Stage 1, pose autoencoder.** A Transformer autoencoder compresses each 534-D pose frame (body, hands and face, 178 3D keypoints) into a 256-D latent and is then frozen.
-
-**Stage 2, latent flow matching.** Text features from a frozen mBART-50 encoder condition a flow matching model that carries Gaussian noise to the latent sequence along a straight path. A length predictor sets the number of frames, a midpoint ODE solver with time-decaying classifier-free guidance integrates the velocity field over 50 steps, and the frozen decoder returns poses.
-
-<p align="center"><img src="assets/figures/coarse_to_fine.png" width="80%"></p>
-
-**Coarse-to-fine velocity.** The final velocity is $\mathbf{v}(t)=\hat{\mathbf{v}}_{\text{flow}}+\lambda(t)\,\mathrm{sg}(\hat{\mathbf{v}}_{\text{prior}})$ with $\lambda(t)=\tfrac12(1-t)$. The prior matters most while the sample is mostly noise and fades out at the end; the stop-gradient keeps the two branches from depending on each other.
+SignFML works in two stages: a pose autoencoder learns a compact latent space for signing motion, and a text-conditioned flow matching model generates in that space. The coarse-to-fine velocity decomposition, the SLT perceptual loss and the full training and sampling details are described in the paper.
 
 ## Results
 
