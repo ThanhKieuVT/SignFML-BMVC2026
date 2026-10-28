@@ -25,12 +25,7 @@
 </div>
 
 SignFML turns spoken-language text into 3D sign pose sequences without gloss annotation. It runs conditional flow matching in the compact latent space of a pose autoencoder, so training stays stable on a small dataset and sampling needs about 10&times; fewer network evaluations than diffusion models.
-
-## News
-
-- **2026-10-28** Qualitative examples added to this page.
-- **2026-08-26** Code release and pretrained checkpoints for Stage 1 and Stage 2.
-- **2026-08-08** SignFML is accepted to **BMVC 2026**.
+ 
 
 ## Highlights
 
