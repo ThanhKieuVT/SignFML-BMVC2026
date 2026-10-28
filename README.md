@@ -108,61 +108,38 @@ Pretrained weights are hosted on Google Drive, as the files are too large for Gi
 | Stage 1 | Pose autoencoder (frozen in Stage 2) | [Google Drive](https://drive.google.com/drive/folders/1FibopW3Nk3E0w-tkShI3FFlrdllAQ3N9?usp=drive_link) |
 | Stage 2 | SignFML final (BLEU-4 12.58, WER 81.51) | [Google Drive](https://drive.google.com/drive/folders/15QJoVisL7GyP4WxtIh42wsRITm3swosI?usp=drive_link) |
 
-## Getting started
+## Code overview
 
 > [!NOTE]
-> This is a public reference release accompanying the paper. The model and training code are provided as **skeletons** (class and method structure only) with implementation details redacted. It documents the method and architecture and is not meant for turnkey re-execution.
-
-**Install**
-
-```bash
-pip install -r requirements.txt
-```
-
-**Data.** PHOENIX-2014T stored as `.pt` files (`train.pt`, `dev.pt`, `test.pt`), each a dict of `video_id -> {poses_3d: [T,178,3], text: str, gloss: str, ...}`. Poses are flattened to 534-D and normalized (see `dataset.py`).
-
-**Train**
-
-```bash
-# Stage 1: pose autoencoder (frozen after training)
-python training/train_stage1_autoencoder.py \
-    --data_dir /path/to/phoenix2014t --output_dir ckpts/stage1
-
-# Stage 2: latent flow matching (uses the frozen Stage 1 AE and the frozen SLT encoder)
-python training/train_stage2.py \
-    --data_dir /path/to/phoenix2014t \
-    --stage1_checkpoint ckpts/stage1/ae_best.pt \
-    --slt_model_dir /path/to/slt_backtranslation \
-    --output_dir ckpts/stage2
-```
-
-Hyperparameters and full arguments are omitted from this public release.
+> This is a public reference release accompanying the paper. The model and training code are provided as **skeletons** (class and method structure only) with implementation details, hyperparameters and data pipelines redacted. It documents the method and architecture and is not meant for re-execution.
 
 <details>
 <summary><b>Repository layout</b></summary>
 
 ```
-signfml_release/
+SignFML-BMVC2026/
 ├── training/
 │   ├── train_stage1_autoencoder.py     # Stage 1: pose autoencoder
 │   └── train_stage2.py                 # Stage 2: latent flow matching
 ├── models/fml/                         # core models (skeletons)
-│   ├── autoencoder.py                  # Stage 1 autoencoder
-│   ├── autoencoder_v2.py               # AE used by Stage 2 (frozen)
-│   ├── latent_flow_matcher.py          # multi-scale flow + coarse-to-fine prior
-│   ├── transformer_prior.py            # Transformer prior (coarse velocity)
-│   ├── flow_matching.py                # shared flow-matching components
-│   ├── weighted_pose_loss.py           # part-weighted pose loss (+velocity/bone)
-│   ├── slt_perceptual_loss.py          # SLT perceptual loss
-│   └── ema.py                          # EMA of weights
+│   ├── autoencoder.py
+│   ├── autoencoder_v2.py
+│   ├── latent_flow_matcher.py
+│   ├── transformer_prior.py
+│   ├── flow_matching.py
+│   ├── weighted_pose_loss.py
+│   ├── slt_perceptual_loss.py
+│   └── ema.py
 ├── tools/slt_wrapper.py                # wrapper around the frozen back-translation SLT
-├── dataset.py                          # Phoenix14TDataset + collate_fn
-├── dataset_v4.py                       # Phoenix14TDatasetV4 (Stage 2, temporal aug)
-├── configs/slt_v2_seed142.yaml         # config for the independent SLT_ind evaluator
+├── configs/
 └── requirements.txt
 ```
 
 </details>
+
+## Contact
+
+For questions or research collaboration, please contact Kieu Vo at [vothithanhkieu400@gmail.com](mailto:vothithanhkieu400@gmail.com).
 
 ## Citation
 
