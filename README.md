@@ -29,6 +29,15 @@ the velocity field (S=50 steps → 100 NFEs), then a light Gaussian smoothing (�
 |---|---|---|---|
 | 12.58 | 81.51 | 0.886 | 100 (≈10× fewer than diffusion) |
 
+## Qualitative examples
+
+Generated from the German sentence alone, on PHOENIX-2014T test sentences. Left: ground-truth skeleton. Right: SignFML.
+
+| | |
+|---|---|
+| <img src="assets/qualitative/rank1.gif" width="100%"><br>*"guten abend liebe zuschauer."*<br>Good evening, dear viewers. | <img src="assets/qualitative/rank2.gif" width="100%"><br>*"und nun die wettervorhersage für morgen dienstag den fünften januar."*<br>And now the weather forecast for tomorrow, Tuesday the 5th of January. |
+| <img src="assets/qualitative/rank4.gif" width="100%"><br>*"und nun die wettervorhersage für morgen donnerstag den dritten märz."*<br>And now the weather forecast for tomorrow, Thursday the 3rd of March. | <img src="assets/qualitative/rank5.gif" width="100%"><br>*"und nun die wettervorhersage für morgen montag den achtundzwanzigsten november."*<br>And now the weather forecast for tomorrow, Monday the 28th of November. |
+
 ## Repository layout
 
 ```
