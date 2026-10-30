@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="assets/logos/hcmut_cse_logo.png" height="64">&emsp;&emsp;<img src="assets/logos/bmvc2026_logo.png" height="64">
+<img src="assets/logos/bmvc2026_logo.png" >
 
 <h1>SignFML: Gloss-Free Sign Language Production<br>via Multi-Scale Latent Flow Matching</h1>
 
